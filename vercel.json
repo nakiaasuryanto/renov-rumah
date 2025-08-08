@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/accounts.js": {
+      "maxDuration": 10
+    },
+    "api/transactions.js": {
+      "maxDuration": 10
+    }
+  }
+}
