@@ -1,6 +1,19 @@
 // API for expenses - MySQL-backed expense tracking
+// Note: For Vercel deployment, use environment variables from Vercel dashboard
 
-const pool = require('../config/db.js');
+const mysql = require('mysql2/promise');
+
+// Create connection pool
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'pengeluaran_db',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
 
 module.exports = async function handler(req, res) {
     // Enable CORS
@@ -14,7 +27,6 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
-        // Return all expenses sorted by date (newest first)
         try {
             const [results] = await pool.query(
                 'SELECT * FROM expenses ORDER BY date DESC, id DESC'
@@ -40,8 +52,6 @@ module.exports = async function handler(req, res) {
                 'INSERT INTO expenses (date, category, description, amount) VALUES (?, ?, ?, ?)',
                 [date, category, description, amount]
             );
-
-            console.log('📥 New Expense saved:', { id: result.insertId, date, category, description, amount });
 
             res.status(201).json({
                 id: result.insertId,
@@ -81,7 +91,6 @@ module.exports = async function handler(req, res) {
                 return;
             }
 
-            console.log('🗑️ Expense deleted:', id);
             res.status(200).json({ message: 'Expense deleted successfully' });
 
         } catch (error) {
