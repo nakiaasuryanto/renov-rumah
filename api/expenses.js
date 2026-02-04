@@ -1,11 +1,11 @@
 // API for expenses - Neon Postgres backed expense tracking
 // Works on Vercel with Neon database
 
-import { neon } from '@neondatabase/serverless';
+const { neon } = require('@neondatabase/serverless');
 
 const sql = neon(process.env.DATABASE_URL);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
@@ -86,4 +86,4 @@ export default async function handler(req, res) {
     }
 
     res.status(405).json({ error: 'Method not allowed' });
-}
+};
