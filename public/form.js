@@ -41,6 +41,11 @@ class ExpenseForm {
     }
 
     async handleFormSubmit() {
+        // Prevent duplicate submissions
+        if (this.isSubmitting) {
+            return;
+        }
+
         try {
             const formData = new FormData(this.form);
             const expenseData = {
@@ -61,6 +66,7 @@ class ExpenseForm {
                 return;
             }
 
+            this.isSubmitting = true;
             this.setSubmitLoading(true);
 
             // Submit to API
@@ -86,6 +92,7 @@ class ExpenseForm {
             console.error('Error submitting expense:', error);
             this.showMessage(`❌ ${error.message}`, 'error');
         } finally {
+            this.isSubmitting = false;
             this.setSubmitLoading(false);
         }
     }
@@ -220,7 +227,9 @@ async function deleteExpense(id) {
     }
 }
 
-// Initialize when DOM is loaded
+// Initialize when DOM is loaded (prevent multiple instances)
 document.addEventListener('DOMContentLoaded', () => {
-    new ExpenseForm();
+    if (!window.expenseFormInstance) {
+        window.expenseFormInstance = new ExpenseForm();
+    }
 });
