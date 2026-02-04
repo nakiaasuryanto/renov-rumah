@@ -282,6 +282,16 @@
             background: #1a1a1a;
         }
 
+        .list-indicator {
+            background: #e8e8e8;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
         .no-expenses {
             text-align: center;
             padding: 40px;
@@ -337,6 +347,64 @@
             font-size: 14px;
             font-weight: 600;
             color: #2d2d2d;
+        }
+
+        /* Date Filter */
+        .date-filter {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-group {
+            flex: 1;
+        }
+
+        .filter-group label {
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn {
+            background: #2d2d2d;
+            color: white;
+        }
+
+        .filter-btn:hover {
+            background: #1a1a1a;
+        }
+
+        .filter-btn.secondary {
+            background: #e0e0e0;
+            color: #2d2d2d;
+        }
+
+        .filter-btn.secondary:hover {
+            background: #ccc;
         }
 
         /* Responsive */
@@ -466,6 +534,24 @@
                 <div class="list-header">
                     <h2>📋 Daftar Pengeluaran</h2>
                     <button id="refreshBtn" class="refresh-btn">🔄 Refresh</button>
+                </div>
+
+                <!-- Date Filter -->
+                <div class="date-filter">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="filterStartDate">Dari:</label>
+                            <input type="date" id="filterStartDate">
+                        </div>
+                        <div class="filter-group">
+                            <label for="filterEndDate">Sampai:</label>
+                            <input type="date" id="filterEndDate">
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="applyFilterBtn" class="filter-btn">🔍 Filter</button>
+                        <button id="clearFilterBtn" class="filter-btn secondary">✖ Clear</button>
+                    </div>
                 </div>
 
                 <div id="expenseList" class="expense-list">

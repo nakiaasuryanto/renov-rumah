@@ -18,9 +18,20 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'GET') {
         try {
-            const result = await sql`
-                SELECT * FROM expenses ORDER BY date DESC, id DESC
-            `;
+            const { startDate, endDate } = req.query;
+
+            let result;
+            if (startDate && endDate) {
+                result = await sql`
+                    SELECT * FROM expenses
+                    WHERE date >= ${startDate} AND date <= ${endDate}
+                    ORDER BY date DESC, id DESC
+                `;
+            } else {
+                result = await sql`
+                    SELECT * FROM expenses ORDER BY date DESC, id DESC
+                `;
+            }
             res.status(200).json(result);
         } catch (error) {
             console.error('Error fetching expenses:', error);

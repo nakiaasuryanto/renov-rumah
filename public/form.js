@@ -13,6 +13,16 @@ class ExpenseForm {
         this.totalAmountEl = document.getElementById('totalAmount');
         this.refreshBtn = document.getElementById('refreshBtn');
 
+        // Filter elements
+        this.filterStartDate = document.getElementById('filterStartDate');
+        this.filterEndDate = document.getElementById('filterEndDate');
+        this.applyFilterBtn = document.getElementById('applyFilterBtn');
+        this.clearFilterBtn = document.getElementById('clearFilterBtn');
+
+        // Filter state
+        this.isFilterActive = false;
+        this.allExpenses = [];
+
         this.init();
     }
 
@@ -37,6 +47,16 @@ class ExpenseForm {
         // Refresh button
         this.refreshBtn.addEventListener('click', () => {
             this.loadExpenses();
+        });
+
+        // Apply filter button
+        this.applyFilterBtn.addEventListener('click', () => {
+            this.applyFilter();
+        });
+
+        // Clear filter button
+        this.clearFilterBtn.addEventListener('click', () => {
+            this.clearFilter();
         });
     }
 
@@ -99,20 +119,51 @@ class ExpenseForm {
 
     async loadExpenses() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/api/expenses`);
+            let url = `${this.apiBaseUrl}/api/expenses`;
+
+            // Add filter parameters if active
+            if (this.isFilterActive && this.filterStartDate.value && this.filterEndDate.value) {
+                url += `?startDate=${this.filterStartDate.value}&endDate=${this.filterEndDate.value}`;
+            }
+
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const expenses = await response.json();
-            this.displayExpenses(expenses);
+
+            // Store all expenses for calculations
+            this.allExpenses = expenses;
+
+            // If filter is NOT active, only show first 5
+            const expensesToShow = this.isFilterActive ? expenses : expenses.slice(0, 5);
+
+            this.displayExpenses(expensesToShow, expenses.length);
 
         } catch (error) {
             console.error('Error loading expenses:', error);
         }
     }
 
-    displayExpenses(expenses) {
+    applyFilter() {
+        if (!this.filterStartDate.value || !this.filterEndDate.value) {
+            this.showMessage('Pilih tanggal awal dan akhir!', 'error');
+            return;
+        }
+
+        this.isFilterActive = true;
+        this.loadExpenses();
+    }
+
+    clearFilter() {
+        this.isFilterActive = false;
+        this.filterStartDate.value = '';
+        this.filterEndDate.value = '';
+        this.loadExpenses();
+    }
+
+    displayExpenses(expenses, totalCount = null) {
         if (expenses.length === 0) {
             this.expenseList.innerHTML = '';
             this.noExpenses.style.display = 'block';
@@ -124,6 +175,11 @@ class ExpenseForm {
 
         this.noExpenses.style.display = 'none';
 
+        // Calculate totals from ALL expenses (not just displayed ones)
+        const total = this.allExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+        const jasaTotal = this.allExpenses.filter(e => e.category === 'jasa').reduce((sum, e) => sum + Number(e.amount), 0);
+        const barangTotal = this.allExpenses.filter(e => e.category === 'barang').reduce((sum, e) => sum + Number(e.amount), 0);
+
         // Calculate totals (convert to number)
         const total = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
         const jasaTotal = expenses.filter(e => e.category === 'jasa').reduce((sum, e) => sum + Number(e.amount), 0);
@@ -134,8 +190,23 @@ class ExpenseForm {
         document.getElementById('jasaTotal').textContent = 'Rp ' + jasaTotal.toLocaleString('id-ID');
         document.getElementById('barangTotal').textContent = 'Rp ' + barangTotal.toLocaleString('id-ID');
 
+        // Update displays
+        this.totalAmountEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+        document.getElementById('jasaTotal').textContent = 'Rp ' + jasaTotal.toLocaleString('id-ID');
+        document.getElementById('barangTotal').textContent = 'Rp ' + barangTotal.toLocaleString('id-ID');
+
         // Build expense list
         let html = '';
+
+        // Show indicator if not all expenses are displayed
+        if (!this.isFilterActive && totalCount && totalCount > 5) {
+            html += `
+                <div class="list-indicator">
+                    📊 Menampilkan 5 pengeluaran terakhir dari ${totalCount} total
+                </div>
+            `;
+        }
+
         expenses.forEach(expense => {
             const categoryLabel = expense.category === 'jasa' ? 'Jasa' : 'Barang';
             const amount = Number(expense.amount);
