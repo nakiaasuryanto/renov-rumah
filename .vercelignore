@@ -8,3 +8,4 @@ config
 test-input.html
 frontend
 public
+server.js
