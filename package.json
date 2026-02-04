@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Simple expense tracking application",
   "type": "module",
-  "main": "server.js",
+  "main": "server.local.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.local.js",
+    "dev": "nodemon server.local.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
