@@ -1,21 +1,11 @@
-// API for expenses - MySQL-backed expense tracking
-// Note: For Vercel deployment, use environment variables from Vercel dashboard
+// API for expenses - Neon Postgres backed expense tracking
+// Works on Vercel with Neon database
 
-const mysql = require('mysql2/promise');
+import neon from '@neondatabase/serverless';
 
-// Create connection pool
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'pengeluaran_db',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+const sql = neon(process.env.DATABASE_URL);
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
@@ -28,10 +18,10 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'GET') {
         try {
-            const [results] = await pool.query(
-                'SELECT * FROM expenses ORDER BY date DESC, id DESC'
-            );
-            res.status(200).json(results);
+            const result = await sql`
+                SELECT * FROM expenses ORDER BY date DESC, id DESC
+            `;
+            res.status(200).json(result);
         } catch (error) {
             console.error('Error fetching expenses:', error);
             res.status(500).json({ error: 'Failed to fetch expenses' });
@@ -48,21 +38,16 @@ module.exports = async function handler(req, res) {
                 return;
             }
 
-            const [result] = await pool.query(
-                'INSERT INTO expenses (date, category, description, amount) VALUES (?, ?, ?, ?)',
-                [date, category, description, amount]
-            );
+            const result = await sql`
+                INSERT INTO expenses (date, category, description, amount)
+                VALUES (${date}, ${category}, ${description}, ${amount})
+                RETURNING *
+            `;
 
             res.status(201).json({
-                id: result.insertId,
+                id: result[0].id,
                 message: 'Expense saved successfully',
-                data: {
-                    id: result.insertId,
-                    date,
-                    category,
-                    description,
-                    amount: parseFloat(amount)
-                }
+                data: result[0]
             });
 
         } catch (error) {
@@ -81,12 +66,12 @@ module.exports = async function handler(req, res) {
                 return;
             }
 
-            const [result] = await pool.query(
-                'DELETE FROM expenses WHERE id = ?',
-                [parseInt(id)]
-            );
+            const result = await sql`
+                DELETE FROM expenses WHERE id = ${id}
+                RETURNING *
+            `;
 
-            if (result.affectedRows === 0) {
+            if (!result.length) {
                 res.status(404).json({ error: 'Expense not found' });
                 return;
             }
@@ -101,4 +86,4 @@ module.exports = async function handler(req, res) {
     }
 
     res.status(405).json({ error: 'Method not allowed' });
-};
+}
