@@ -1,0 +1,8 @@
+{
+  "name": "catatan-pengeluaran",
+  "version": "1.0.0",
+  "description": "Simple expense tracking application",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2"
+  }
+}
