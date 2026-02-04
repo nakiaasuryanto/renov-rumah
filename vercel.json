@@ -1,8 +1,11 @@
 {
   "buildCommand": null,
   "outputDirectory": null,
-  "public": true,
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
