@@ -1,7 +1,7 @@
 // API for expenses - Neon Postgres backed expense tracking
 // Works on Vercel with Neon database
 
-import neon from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
 

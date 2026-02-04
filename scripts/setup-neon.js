@@ -1,7 +1,7 @@
 // Initialize Neon Postgres database with expenses table
 // Run with: node scripts/setup-neon.js
 
-import neon from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless';
 import dotenv from 'dotenv';
 
 dotenv.config();
