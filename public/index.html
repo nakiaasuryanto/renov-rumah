@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Pengeluaran</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            background: #ffffff;
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        .header {
+            background: #2d2d2d;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.7;
+            font-size: 13px;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        /* FORM SIDE */
+        .form-side {
+            padding: 30px;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d2d2d;
+            font-size: 13px;
+        }
+
+        .required::after {
+            content: ' *';
+            color: #2d2d2d;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: white;
+            color: #2d2d2d;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2d2d2d;
+            box-shadow: 0 0 0 2px rgba(45, 45, 45, 0.1);
+        }
+
+        .currency-input {
+            position: relative;
+        }
+
+        .currency-input::before {
+            content: 'Rp';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .currency-input input {
+            padding-left: 35px;
+        }
+
+        .submit-btn {
+            background: #2d2d2d;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #1a1a1a;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+            font-size: 13px;
+        }
+
+        .message.success {
+            background: #f0f0f0;
+            color: #2d2d2d;
+            border: 1px solid #ccc;
+        }
+
+        .message.error {
+            background: #f0f0f0;
+            color: #2d2d2d;
+            border: 1px solid #ccc;
+        }
+
+        /* LIST SIDE */
+        .list-side {
+            padding: 30px;
+            background: #f5f5f5;
+            overflow-y: auto;
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .list-header h2 {
+            color: #2d2d2d;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            background: #2d2d2d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #1a1a1a;
+        }
+
+        .expense-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .expense-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #2d2d2d;
+            transition: all 0.2s ease;
+        }
+
+        .expense-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .expense-card.category-jasa {
+            border-left-color: #2d2d2d;
+        }
+
+        .expense-card.category-barang {
+            border-left-color: #666;
+        }
+
+        .expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .expense-category {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .category-jasa .expense-category {
+            background: #2d2d2d;
+            color: #fff;
+        }
+
+        .category-barang .expense-category {
+            background: #666;
+            color: #fff;
+        }
+
+        .expense-date {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .expense-description {
+            color: #2d2d2d;
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .expense-amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+
+        .expense-amount::before {
+            content: 'Rp ';
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .delete-btn {
+            background: #2d2d2d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .delete-btn:hover {
+            background: #1a1a1a;
+        }
+
+        .no-expenses {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .total-summary {
+            background: #2d2d2d;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .total-summary h3 {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .total-amount {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        /* Category Totals */
+        .category-totals {
+            display: flex;
+            gap: 10px;
+        }
+
+        .category-total-item {
+            flex: 1;
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .cat-label {
+            font-size: 11px;
+            color: #666;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .cat-amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                width: 100vw;
+                height: 100vh;
+                overflow-y: auto;
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                overflow: visible;
+            }
+
+            .form-side {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 20px;
+                overflow: visible;
+            }
+
+            .list-side {
+                padding: 20px;
+                overflow: visible;
+            }
+
+            .category-totals {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .header p {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-side, .list-side {
+                padding: 15px;
+            }
+
+            .total-amount {
+                font-size: 24px;
+            }
+
+            .expense-amount {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💸 Catatan Pengeluaran</h1>
+            <p>Catat pengeluaran harian dengan mudah</p>
+        </div>
+
+        <div class="content">
+            <!-- FORM SIDE -->
+            <div class="form-side">
+                <div id="message" class="message"></div>
+
+                <form id="expenseForm">
+                    <div class="form-group">
+                        <label for="date" class="required">Tanggal</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category" class="required">Kategori</label>
+                        <select id="category" name="category" required>
+                            <option value="" disabled selected>Pilih kategori...</option>
+                            <option value="jasa">Jasa</option>
+                            <option value="barang">Barang</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description" class="required">Keterangan</label>
+                        <input type="text" id="description" name="description"
+                               placeholder="Contoh: Beli kopi, Bayar listrik, dll" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount" class="required">Nominal</label>
+                        <div class="currency-input">
+                            <input type="number" id="amount" name="amount"
+                                   placeholder="0" min="0" step="1" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span id="submitText">💾 Simpan Pengeluaran</span>
+                    </button>
+                </form>
+
+                <!-- Total Summary -->
+                <div class="total-summary" style="margin-top: 20px;">
+                    <h3>Total Pengeluaran</h3>
+                    <div class="total-amount" id="totalAmount">Rp 0</div>
+                </div>
+
+                <!-- Category Totals -->
+                <div class="category-totals" id="categoryTotals">
+                    <div class="category-total-item">
+                        <span class="cat-label">Jasa</span>
+                        <span class="cat-amount" id="jasaTotal">Rp 0</span>
+                    </div>
+                    <div class="category-total-item">
+                        <span class="cat-label">Barang</span>
+                        <span class="cat-amount" id="barangTotal">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIST SIDE -->
+            <div class="list-side">
+                <div class="list-header">
+                    <h2>📋 Daftar Pengeluaran</h2>
+                    <button id="refreshBtn" class="refresh-btn">🔄 Refresh</button>
+                </div>
+
+                <div id="expenseList" class="expense-list">
+                    <!-- Expenses will be loaded here -->
+                </div>
+
+                <div id="noExpenses" class="no-expenses">
+                    <p>📋 Belum ada pengeluaran</p>
+                    <p style="font-size: 12px; margin-top: 10px;">Pengeluaran yang disimpan akan muncul di sini</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="form.js"></script>
+</body>
+</html>
