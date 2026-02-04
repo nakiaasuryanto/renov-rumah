@@ -1,101 +1,283 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Daftar Transaksi</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-    }
-    h2 {
-        margin-bottom: 20px;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-    }
-    th, td {
-        padding: 8px 10px;
-        border: 1px solid #999;
-    }
-    th {
-        background-color: #f4a261;
-        color: #fff;
-    }
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pengeluaran</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .total-summary {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .total-summary h3 {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .total-amount {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .expense-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .expense-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .expense-card:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .expense-card.category-jasa {
+            border-left: 4px solid #3498db;
+        }
+
+        .expense-card.category-barang {
+            border-left: 4px solid #e67e22;
+        }
+
+        .expense-info {
+            flex: 1;
+        }
+
+        .expense-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .expense-category {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .category-jasa .expense-category {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .category-barang .expense-category {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .expense-date {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+
+        .expense-description {
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .expense-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e74c3c;
+            text-align: right;
+            min-width: 120px;
+        }
+
+        .no-expenses {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .no-expenses p {
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .expense-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .expense-amount {
+                text-align: left;
+                margin-top: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>📒 Daftar Transaksi</h2>
-        <a href="/" style="background: #f4a261; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold;">
-            ⬅️ Kembali ke Form
-        </a>
+    <div class="container">
+        <div class="header">
+            <h1>💸 Daftar Pengeluaran</h1>
+            <a href="/" class="back-btn">⬅️ Kembali ke Form</a>
+        </div>
+
+        <div class="content">
+            <div class="total-summary">
+                <h3>Total Pengeluaran</h3>
+                <div class="total-amount" id="totalAmount">Rp 0</div>
+            </div>
+
+            <div id="expenseList" class="expense-list">
+                <!-- Expenses will be loaded here -->
+            </div>
+
+            <div id="noExpenses" class="no-expenses">
+                <p>📋 Belum ada pengeluaran</p>
+            </div>
+        </div>
     </div>
-    <table id="transactionsTable">
-        <thead>
-        <tr>
-            <th>TANGGAL</th>
-            <th>DESKRIPSI</th>
-            <th>NO AKUN</th>
-            <th>NAMA AKUN</th>
-            <th>DEBIT</th>
-            <th>NO AKUN</th>
-        <th>NAMA AKUN</th>
-            <th>KREDIT</th>
-        </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
 
-<script>
-    async function loadTransactions() {
-        const res = await fetch('/api/transactions');
-        const transactions = await res.json();
-        const tbody = document.querySelector('#transactionsTable tbody');
+    <script>
+        const apiBaseUrl = window.location.origin;
 
-        transactions.forEach(tx => {
-        const debits = tx.lines.filter(l => l.debit > 0);
-        const credits = tx.lines.filter(l => l.credit > 0);
-        const maxLength = Math.max(debits.length, credits.length);
+        async function loadExpenses() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/expenses`);
+                const expenses = await response.json();
 
-        for (let i = 0; i < maxLength; i++) {
-            const row = document.createElement('tr');
+                const expenseList = document.getElementById('expenseList');
+                const noExpenses = document.getElementById('noExpenses');
+                const totalAmountEl = document.getElementById('totalAmount');
 
-            if (i === 0) {
-            const tdDate = document.createElement('td');
-            tdDate.rowSpan = maxLength;
-            tdDate.textContent = new Date(tx.date).toLocaleDateString('id-ID');
-            row.appendChild(tdDate);
+                if (expenses.length === 0) {
+                    expenseList.innerHTML = '';
+                    noExpenses.style.display = 'block';
+                    totalAmountEl.textContent = 'Rp 0';
+                    return;
+                }
 
-            const tdDesc = document.createElement('td');
-            tdDesc.rowSpan = maxLength;
-            tdDesc.textContent = tx.description;
-            row.appendChild(tdDesc);
+                noExpenses.style.display = 'none';
+
+                // Calculate total
+                const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+                totalAmountEl.textContent = formatRupiah(total);
+
+                // Build expense list
+                let html = '';
+                expenses.forEach(expense => {
+                    const categoryLabel = expense.category === 'jasa' ? 'Jasa' : 'Barang';
+                    html += `
+                        <div class="expense-card category-${expense.category}">
+                            <div class="expense-info">
+                                <div class="expense-header">
+                                    <span class="expense-category">${categoryLabel}</span>
+                                    <span class="expense-date">${formatDate(expense.date)}</span>
+                                </div>
+                                <div class="expense-description">${expense.description}</div>
+                            </div>
+                            <div class="expense-amount">${expense.amount.toLocaleString('id-ID')}</div>
+                        </div>
+                    `;
+                });
+
+                expenseList.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error loading expenses:', error);
+            }
         }
 
-            const debit = debits[i] || {};
-            const credit = credits[i] || {};
-
-            row.innerHTML += `
-            <td>${debit.account_code || ''}</td>
-            <td>${debit.account_name || ''}</td>
-            <td>${debit.debit ? debit.debit.toLocaleString('id-ID') : ''}</td>
-            <td>${credit.account_code || ''}</td>
-            <td>${credit.account_name || ''}</td>
-            <td>${credit.credit ? credit.credit.toLocaleString('id-ID') : ''}</td>
-        `;
-
-            tbody.appendChild(row);
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(number);
         }
-    });
-    }
 
-    loadTransactions();
-</script>
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        // Load expenses on page load
+        loadExpenses();
+    </script>
 </body>
 </html>
