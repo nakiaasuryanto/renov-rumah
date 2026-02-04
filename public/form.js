@@ -175,10 +175,10 @@ class ExpenseForm {
 
         this.noExpenses.style.display = 'none';
 
-        // Calculate totals from displayed expenses only
-        const total = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
-        const jasaTotal = expenses.filter(e => e.category === 'jasa').reduce((sum, e) => sum + Number(e.amount), 0);
-        const barangTotal = expenses.filter(e => e.category === 'barang').reduce((sum, e) => sum + Number(e.amount), 0);
+        // Calculate totals from ALL expenses (not just displayed)
+        const total = this.allExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+        const jasaTotal = this.allExpenses.filter(e => e.category === 'jasa').reduce((sum, e) => sum + Number(e.amount), 0);
+        const barangTotal = this.allExpenses.filter(e => e.category === 'barang').reduce((sum, e) => sum + Number(e.amount), 0);
 
         // Update displays
         this.totalAmountEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
