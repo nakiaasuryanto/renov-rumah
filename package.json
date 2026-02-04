@@ -2,11 +2,11 @@
   "name": "catatan-pengeluaran",
   "version": "1.0.0",
   "description": "Simple expense tracking application",
-  "type": "module",
   "main": "server.local.js",
   "scripts": {
     "start": "node server.local.js",
-    "dev": "nodemon server.local.js"
+    "dev": "nodemon server.local.js",
+    "vercel-build": "echo 'No build needed'"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
