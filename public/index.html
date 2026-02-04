@@ -455,15 +455,41 @@
             }
 
             .form-side input,
-            .form-side select,
-            .filter-group input {
+            .form-side select {
                 padding: 8px;
                 font-size: 12px;
             }
 
-            .form-side label,
+            .form-side label {
+                font-size: 11px;
+            }
+
+            .filter-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .filter-group input {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 8px;
+                font-size: 12px;
+            }
+
             .filter-group label {
                 font-size: 11px;
+            }
+
+            .filter-actions {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .filter-btn {
+                width: 100%;
+                padding: 8px;
+                font-size: 12px;
+                box-sizing: border-box;
             }
 
             .submit-btn {
@@ -477,11 +503,6 @@
 
             .expense-amount {
                 font-size: 16px;
-            }
-
-            .filter-btn {
-                padding: 6px 10px;
-                font-size: 11px;
             }
         }
     </style>
